@@ -277,19 +277,41 @@ class PetKitClient:
             url=PetkitEndpoint.IOT_DEVICE_INFO_V2,
             headers=await self.get_session_id(),
         )
-        return NewIotInfo(**response)
+        _LOGGER.debug(
+            "IoT device info raw response keys: %s",
+            list(response.keys()) if isinstance(response, dict) else type(response),
+        )
+        return NewIotInfo.model_validate(response)
 
     async def get_iot_mqtt_config(self) -> IotInfo:
         """Return the preferred IoT/MQTT configuration.
 
-        Prefers the `petkit` platform when available, otherwise falls back to `ali`.
+        Tries the v2 endpoint first (returns {ali: ..., petkit: ...}).
+        Falls back to the v1 endpoint (returns a flat IotInfo) if v2 fails
+        or has no usable data.
         """
-        iot_info = await self.get_iot_device_info()
-        if iot_info.petkit is not None:
-            return iot_info.petkit
-        if iot_info.ali is not None:
-            return iot_info.ali
-        raise PypetkitError("No IoT MQTT configuration available in response")
+        # Try the v2 endpoint first
+        try:
+            iot_info = await self.get_iot_device_info()
+            if iot_info.petkit is not None:
+                return iot_info.petkit
+            if iot_info.ali is not None:
+                return iot_info.ali
+        except Exception as err:  # noqa: BLE001
+            _LOGGER.debug("IoT v2 endpoint failed, trying v1: %s", err)
+
+        # Fall back to v1 endpoint (returns flat IotInfo)
+        _LOGGER.debug("Fetching IoT device info (v1 fallback)")
+        response = await self.req.request(
+            method=HTTPMethod.GET,
+            url=PetkitEndpoint.IOT_DEVICE_INFO,
+            headers=await self.get_session_id(),
+        )
+        _LOGGER.debug(
+            "IoT v1 raw response keys: %s",
+            list(response.keys()) if isinstance(response, dict) else type(response),
+        )
+        return IotInfo.model_validate(response)
 
     async def _get_pet_details(self) -> list[PetDetails]:
         """Fetch pet details from the PetKit API."""

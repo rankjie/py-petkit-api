@@ -2,7 +2,7 @@
 
 from typing import Any, ClassVar
 
-from pydantic import BaseModel, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
 
 from pypetkitapi.const import LIVE_DATA, PetkitEndpoint
 
@@ -58,6 +58,8 @@ class IotInfo(BaseModel):
         - user/iotDeviceInfo_v2
     """
 
+    model_config = ConfigDict(extra="ignore", populate_by_name=True)
+
     created_at: str | None = Field(None, alias="createdAt")
     device_name: str | None = Field(None, alias="deviceName")
     device_secret: str | None = Field(None, alias="deviceSecret", repr=False)
@@ -75,6 +77,8 @@ class IotInfo(BaseModel):
 
 class NewIotInfo(BaseModel):
     """Dataclass for IoT/MQTT connection information (v2 endpoint)."""
+
+    model_config = ConfigDict(extra="ignore", populate_by_name=True)
 
     ali: IotInfo | None = None
     petkit: IotInfo | None = None
