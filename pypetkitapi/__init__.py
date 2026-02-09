@@ -54,7 +54,7 @@ from .media import DownloadDecryptMedia, MediaCloud, MediaFile, MediaManager
 from .purifier_container import Purifier
 from .water_fountain_container import WaterFountain
 
-__version__ = "1.3.0.dev1"
+__version__ = "1.3.0.dev2"
 
 __all__ = [
     "CTW3",
