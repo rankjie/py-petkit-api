@@ -54,7 +54,7 @@ PetKit Client is a Python library for interacting with the PetKit API. It allows
 Install the library using pip:
 
 ```bash
-pip install pypetkitapi
+pip install rankjie-pypetkitapi
 ```
 
 ## 💡 Usage Example:

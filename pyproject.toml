@@ -196,13 +196,13 @@ requires = ["poetry-core>=2.0.0"]
 build-backend = "poetry.core.masonry.api"
 
 [tool.poetry]
-name = "pypetkitapi"
-version = "1.22.4"
+name = "rankjie-pypetkitapi"
+version = "1.22.5.dev0"
 description = "Python client for PetKit API"
 authors = ["Jezza34000 <info@mail.com>"]
 readme = "README.md"
-homepage = "https://github.com/Jezza34000/pypetkit"
-repository = "https://github.com/Jezza34000/pypetkit"
+homepage = "https://github.com/rankjie/py-petkit-api"
+repository = "https://github.com/rankjie/py-petkit-api"
 license = "MIT"
 keywords = ["petkit", "api", "client", "pet", "iot"]
 classifiers = [
@@ -240,7 +240,7 @@ pytest-cov = "^7.0.0"
 pytest-asyncio = "^1.0.0"
 
 [tool.bumpver]
-current_version = "1.22.4"
+current_version = "1.22.5.dev0"
 version_pattern = "MAJOR.MINOR.PATCH"
 commit_message = "bump version {old_version} -> {new_version}"
 tag_message = "{new_version}"

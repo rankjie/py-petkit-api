@@ -39,7 +39,7 @@ from .const import (
     MediaType,
     RecordType,
 )
-from .containers import LiveFeed, Pet
+from .containers import IotInfo, LiveFeed, NewIotInfo, Pet
 from .exceptions import (
     PetkitAuthenticationUnregisteredEmailError,
     PetkitRegionalServerNotFoundError,
@@ -54,7 +54,7 @@ from .media import DownloadDecryptMedia, MediaCloud, MediaFile, MediaManager
 from .purifier_container import Purifier
 from .water_fountain_container import WaterFountain
 
-__version__ = "1.22.4"
+__version__ = "1.22.5.dev0"
 
 __all__ = [
     "CTW3",
@@ -87,6 +87,7 @@ __all__ = [
     "Feeder",
     "FeederCommand",
     "FountainCommand",
+    "IotInfo",
     "LBCommand",
     "Litter",
     "LitterCommand",
@@ -96,6 +97,7 @@ __all__ = [
     "MediaFile",
     "MediaManager",
     "MediaType",
+    "NewIotInfo",
     "Pet",
     "PetCommand",
     "PetKitClient",

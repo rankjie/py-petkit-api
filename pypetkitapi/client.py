@@ -53,7 +53,9 @@ from pypetkitapi.const import (
 from pypetkitapi.containers import (
     AccountData,
     Device,
+    IotInfo,
     LiveFeed,
+    NewIotInfo,
     Pet,
     PetDetails,
     RegionInfo,
@@ -262,6 +264,32 @@ class PetKitClient:
         if self._session is None:
             raise PetkitSessionError("No session ID available")
         return {"F-Session": self._session.id, "X-Session": self._session.id}
+
+    async def get_iot_device_info(self) -> NewIotInfo:
+        """Fetch IoT/MQTT connection information for the current account.
+
+        The official Petkit app uses this to connect to an MQTT broker for near real-time
+        device event notifications.
+        """
+        _LOGGER.debug("Fetching IoT device info (v2)")
+        response = await self.req.request(
+            method=HTTPMethod.GET,
+            url=PetkitEndpoint.IOT_DEVICE_INFO_V2,
+            headers=await self.get_session_id(),
+        )
+        return NewIotInfo(**response)
+
+    async def get_iot_mqtt_config(self) -> IotInfo:
+        """Return the preferred IoT/MQTT configuration.
+
+        Prefers the `petkit` platform when available, otherwise falls back to `ali`.
+        """
+        iot_info = await self.get_iot_device_info()
+        if iot_info.petkit is not None:
+            return iot_info.petkit
+        if iot_info.ali is not None:
+            return iot_info.ali
+        raise PypetkitError("No IoT MQTT configuration available in response")
 
     async def _get_pet_details(self) -> list[PetDetails]:
         """Fetch pet details from the PetKit API."""

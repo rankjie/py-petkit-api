@@ -50,6 +50,36 @@ class SessionInfo(BaseModel):
     refreshed_at: str | None = None
 
 
+class IotInfo(BaseModel):
+    """Dataclass for IoT/MQTT connection information.
+
+    Fetched from the API endpoint:
+        - user/iotDeviceInfo
+        - user/iotDeviceInfo_v2
+    """
+
+    created_at: str | None = Field(None, alias="createdAt")
+    device_name: str | None = Field(None, alias="deviceName")
+    device_secret: str | None = Field(None, alias="deviceSecret", repr=False)
+    id: int | None = None
+    iot_instance_id: str | None = Field(None, alias="iotInstanceId")
+    iot_platform: str | None = Field(None, alias="iotPlatform")
+    mqtt_host: str | None = Field(None, alias="mqttHost")
+    mqtt_ip: str | None = Field(None, alias="mqttIp")
+    product_key: str | None = Field(None, alias="productKey")
+    region_id: str | None = Field(None, alias="regionId")
+    standby_mqtt_host: str | None = Field(None, alias="standbyMqttHost")
+    standby_mqtt_ip: str | None = Field(None, alias="standbyMqttIp")
+    type: int | None = None
+
+
+class NewIotInfo(BaseModel):
+    """Dataclass for IoT/MQTT connection information (v2 endpoint)."""
+
+    ali: IotInfo | None = None
+    petkit: IotInfo | None = None
+
+
 class Device(BaseModel):
     """Dataclass for device data.
     Subclass of AccountData.
