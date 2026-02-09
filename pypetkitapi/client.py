@@ -286,32 +286,45 @@ class PetKitClient:
     async def get_iot_mqtt_config(self) -> IotInfo:
         """Return the preferred IoT/MQTT configuration.
 
-        Tries the v2 endpoint first (returns {ali: ..., petkit: ...}).
-        Falls back to the v1 endpoint (returns a flat IotInfo) if v2 fails
-        or has no usable data.
+        The v2 endpoint may return either:
+          - Nested: {"ali": {...}, "petkit": {...}}
+          - Flat: {"deviceName": ..., "mqttHost": ..., ...}  (same as v1)
+        We handle both shapes, preferring petkit > ali > flat.
         """
-        # Try the v2 endpoint first
-        try:
-            iot_info = await self.get_iot_device_info()
-            if iot_info.petkit is not None:
-                return iot_info.petkit
-            if iot_info.ali is not None:
-                return iot_info.ali
-        except Exception as err:  # noqa: BLE001
-            _LOGGER.debug("IoT v2 endpoint failed, trying v1: %s", err)
+        for endpoint_name, endpoint_url in [
+            ("v2", PetkitEndpoint.IOT_DEVICE_INFO_V2),
+            ("v1", PetkitEndpoint.IOT_DEVICE_INFO),
+        ]:
+            try:
+                response = await self.req.request(
+                    method=HTTPMethod.GET,
+                    url=endpoint_url,
+                    headers=await self.get_session_id(),
+                )
+            except Exception as err:  # noqa: BLE001
+                _LOGGER.debug("IoT %s endpoint request failed: %s", endpoint_name, err)
+                continue
 
-        # Fall back to v1 endpoint (returns flat IotInfo)
-        _LOGGER.debug("Fetching IoT device info (v1 fallback)")
-        response = await self.req.request(
-            method=HTTPMethod.GET,
-            url=PetkitEndpoint.IOT_DEVICE_INFO,
-            headers=await self.get_session_id(),
-        )
-        _LOGGER.debug(
-            "IoT v1 raw response keys: %s",
-            list(response.keys()) if isinstance(response, dict) else type(response),
-        )
-        return IotInfo.model_validate(response)
+            if not isinstance(response, dict):
+                continue
+
+            _LOGGER.debug(
+                "IoT %s raw response keys: %s", endpoint_name, list(response.keys())
+            )
+
+            # Nested shape: {ali: {...}, petkit: {...}}
+            if "ali" in response or "petkit" in response:
+                nested = NewIotInfo.model_validate(response)
+                if nested.petkit is not None:
+                    return nested.petkit
+                if nested.ali is not None:
+                    return nested.ali
+
+            # Flat shape: {deviceName: ..., mqttHost: ..., ...}
+            if "deviceName" in response or "mqttHost" in response:
+                return IotInfo.model_validate(response)
+
+        raise PypetkitError("No IoT MQTT configuration available from any endpoint")
 
     async def _get_pet_details(self) -> list[PetDetails]:
         """Fetch pet details from the PetKit API."""
