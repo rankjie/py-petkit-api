@@ -60,7 +60,7 @@ class IotInfo(BaseModel):
 
     model_config = ConfigDict(extra="ignore", populate_by_name=True)
 
-    created_at: str | None = Field(None, alias="createdAt")
+    created_at: str | int | None = Field(None, alias="createdAt")
     device_name: str | None = Field(None, alias="deviceName")
     device_secret: str | None = Field(None, alias="deviceSecret", repr=False)
     id: int | None = None
