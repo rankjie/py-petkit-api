@@ -34,6 +34,7 @@ from .const import (
     T5,
     T6,
     T7,
+    TEMP_CAMERA_TYPES,
     W5,
     BluetoothState,
     MediaType,
@@ -54,7 +55,7 @@ from .media import DownloadDecryptMedia, MediaCloud, MediaFile, MediaManager
 from .purifier_container import Purifier
 from .water_fountain_container import WaterFountain
 
-__version__ = "1.3.0.dev6"
+__version__ = "1.3.0.dev7"
 
 __all__ = [
     "CTW3",
@@ -79,6 +80,7 @@ __all__ = [
     "T5",
     "T6",
     "T7",
+    "TEMP_CAMERA_TYPES",
     "W5",
     "BluetoothState",
     "DeviceAction",
